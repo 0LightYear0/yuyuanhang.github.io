@@ -4,7 +4,209 @@
 	<meta name = "viewport" content = "width = device-width,initial-scale = 1"> 
 	<title>于远航的个人主页</title>
 	</head>
-	<body background = images\tiger.jpg style="background-repeat:no-repeat; background-size:cover; background-attachment:fixed">
+	<body background = images\tiger.jpg style="background-repeat:no-repeat; background-size:cover; background-attachment:fixed" onLoad="BackToTop();Adddiv()">
+        <script>
+        var mouseX, mouseY; 
+        var objX, objY; 
+        var isDowm = false;
+        
+        function mouseDown(obj,e)
+        {
+            obj.style.cursor = "move";
+            objX = obj.style.left;
+            objY = obj.style.top;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if(obj.draggable1 == true)
+            {
+                isDowm = true;
+            }
+        } 
+        
+        function mouseMove(e) 
+        {
+            var div = document.getElementById("_text"); 
+            var x = e.clientX; 
+            var y = e.clientY; 
+            if (isDowm) 
+            { 
+                div.style.left = parseInt(objX) + parseInt(x) - parseInt(mouseX) + "px"; 
+                div.style.top = parseInt(objY) + parseInt(y) - parseInt(mouseY) + "px";  
+            } 
+        } 
+        function mouseUp(e) 
+        {
+            if (isDowm) 
+            { 
+                var x = e.clientX; 
+                var y = e.clientY; 
+                var div = document.getElementById("_text"); 
+                div.style.left = (parseInt(x) - parseInt(mouseX) + parseInt(objX)) + "px"; 
+                div.style.top = (parseInt(y) - parseInt(mouseY) + parseInt(objY)) + "px";  
+                mouseX = x; 
+                rewmouseY = y; 
+                div.style.cursor = "default";
+                isDowm = false; 
+             } 
+        }
+        
+        function Adddiv()
+        {
+            this.control = document.createElement('div');
+            this.control.id = '_text';
+            this.control.style.position = 'fixed';
+            this.control.style.width = '200px';
+            this.control.style.height = '100px';
+            this.control.style.left = '0px';
+            this.control.style.top = '0px';
+            this.control.x = 0;
+            this.control.y = 0;
+            var t1 = this.control;
+            t1.draggable1 = 1;
+            t1.closeKey = 27;
+            this.control.onmousedown = function()
+            {
+                mouseDown(t1,event);
+            }
+            this.control.onmousemove= function()
+            {
+                mouseMove(event);
+            }
+            this.control.onmouseup= function()
+            {
+                mouseUp(event);
+            }
+            var p = document.createElement('p');
+            p.id = "_text1";
+            p.style.color = 'white';
+            p.innerHTML = "欢迎来到我的主页";
+            this.control.appendChild(p);
+            var t = document.getElementsByTagName('body');
+            t[0].appendChild(this.control);
+            t[0].addEventListener('keydown',function(e)
+            {
+                var keynum = window.event ? e.keyCode : e.which;
+                if(keynum == t1.closeKey)
+                {
+                    if(t1.style.display == 'block')
+                    {
+                        t1.style.display = 'none';
+                    }
+                    else
+                    {
+                        t1.style.display = 'block';
+                    }
+                }
+            },false);
+        }
+
+        function _init(setting)
+        {
+            var t = document.getElementById('_text');
+            var t1 = document.getElementById('_text1');
+            if(typeof(arguments[0].content) == 'string')
+            {
+                t1.innerHTML = arguments[0].content;
+            }
+            if(arguments[0].draggable1 != undefined)
+            {
+                t.draggable1 = arguments[0].draggable1;
+            }
+            if(arguments[0].closeKey != undefined)
+            {
+                t.closeKey = arguments[0].closeKey;
+            }
+        }
+        function pageScroll()
+        {
+            if(document.body.scrollTop == 0)
+            {
+                clearTimeout(scrolldelay);
+            }
+            else
+            {
+                window.scrollBy(0,-100);
+                scrolldelay = setTimeout('pageScroll()',100);
+            }
+        }
+
+        function check()
+        {
+            _check = setTimeout('check()',100);
+            if(document.body.scrollTop == 0)
+            {
+                var t2 = document.getElementById('_backtotop');
+                t2.style.display = 'none';
+            }
+            else
+            {
+                var t2 = document.getElementById('_backtotop');
+                t2.style.display = "block";
+            }
+        }
+
+        function BackToTop()
+        {
+            this.control = document.createElement('input');
+            this.control.id = '_backtotop';
+            this.control.type = 'button';
+            this.control.onclick = function()
+            {
+                pageScroll();
+            };
+            this.control.style.position = 'fixed';
+            this.control.style.width = '100px';
+            this.control.style.height = '100px';
+            this.control.style.right = '0px';
+            this.control.style.bottom = '0px';
+            this.control.value = '点击回到顶部';
+            var t = document.getElementsByTagName('body');
+            t[0].appendChild(this.control);
+            t[0].addEventListener('keydown',function(e)
+            {
+                var keynum = window.event ? e.keyCode : e.which;
+                if(keynum == 65)
+                {
+                    pageScroll();
+                }
+            },false);
+            check();
+        }
+
+        function init(setting)
+        {
+            var t = document.getElementById('_backtotop');
+            if(typeof(arguments[0].x) == 'number')
+            {
+                t.style.left = setting.x + 'px';
+                t.style.top = setting.y + 'px';
+            }
+            else if(arguments[0].LeftUp == true)
+            {
+                t.style.left = '0px';
+                t.style.top = '0px';
+            }
+            else if(arguments[0].LeftDown == true)
+            {
+                t.style.left = '0px';
+                t.style.bottom = '0px';
+            }
+            else if(arguments[0].RightUp == true)
+            {
+                t.style.right = '0px';
+                t.style.top = '0px';
+            }
+            else if(arguments[0].RightDown == true)
+            {
+                t.style.right = '0px';
+                t.style.bottom = '0px';
+            }
+            else
+            {
+                
+            }
+        }
+	</script>
 		<div class = "background" >
 			<div style = "height:20%"></div>
 			<style>
